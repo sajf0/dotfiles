@@ -4,8 +4,9 @@ vim.opt.relativenumber = true
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>cd", vim.cmd.Ex)
 vim.keymap.set("n", "<C-s>", vim.cmd.w)
+vim.opt.cursorline = true
 
-vim.keymap.set('n', 'q', ':q!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>q', ':q!<CR>', { noremap = true, silent = true })
 
 vim.o.splitright = true
 
@@ -23,8 +24,27 @@ vim.opt.clipboard = "unnamedplus"
 --})
 
 
-vim.keymap.set('n', '<C-a>', function()
-  local filename = vim.fn.expand("%:p") -- Full path to current file
-  vim.cmd("vsplit")                     -- Open a vertical split
-  vim.cmd("terminal octave " .. filename) -- Run Octave in the terminal
-end, { noremap = true, silent = true })
+-- vim.keymap.set('n', '<C-a>', function()
+--   local filename = vim.fn.expand("%:p") 
+--   vim.cmd("vsplit")                     
+--   vim.cmd("terminal octave " .. filename)
+-- end, { noremap = true, silent = true })
+
+
+vim.keymap.set("n", "<C-a>", function()
+    local ext = vim.fn.expand("%:e")
+    local file = vim.fn.expand("%")
+
+    local commands = {
+        py = "python " .. file,
+        m = "octave " .. file,
+	jl = "julia " .. file,
+    }
+
+    local cmd = commands[ext]
+    if cmd then
+        vim.cmd("!" .. cmd)
+    else
+        print("Unsupported file type: " .. ext)
+    end
+end, { desc = "Run file in terminal" })
